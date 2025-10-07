@@ -1,13 +1,14 @@
+import logging
+import src.logger  # type: ignore
 import asyncio
 import contextlib
+from aiohttp import web
+
 from src.control_interface.cli import KVStoreCLI
 from src.control_interface.http import kv_store
 from src.kv_store.basic_kv_store import BasicKVStore
 from src.persister.json_persister import JSONPersister
 from src.control_interface.http import app
-import logging
-import src.logger  # type: ignore
-from aiohttp import web
 
 logger = logging.getLogger("main")
 

@@ -33,8 +33,6 @@ class KVStoreCLI:
                 else:
                     print(f"{key} not found")
             elif cmd.startswith("list"):
-                if len(self.kv_store.list()) == 0:
-                    print("empty")
                 for key, value in self.kv_store.list():
                     print(f"{key}={value}")
             else:

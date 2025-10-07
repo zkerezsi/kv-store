@@ -1,38 +1,27 @@
-from typing import Dict, Optional, Tuple, List
+from typing import Dict, List, Optional, Tuple
 
 from src.kv_store.kv_store import KVStore
-from src.persister.persister import Persister
 
 
-class BasicKVStore(KVStore):
-    kv_store: Dict[str, str] = {}
-    persister: Persister
-
-    def __init__(self, persister: Persister):
-        self.persister = persister
-        self.kv_store = self.persister.load()
+class MockKVStore(KVStore):
+    def __init__(self, initial_data: Dict[str, str] | None):
+        self.kv_store: Dict[str, str] = initial_data or {}
 
     def set(self, key: str, value: str):
         self.kv_store[key] = value
-        self.persister.save(self.kv_store)
 
     def update(self, key: str, value: str) -> bool:
         if key in self.kv_store:
             self.kv_store[key] = value
-            self.persister.save(self.kv_store)
             return True
         return False
 
     def get(self, key: str) -> Optional[str]:
-        try:
-            return self.kv_store[key]
-        except KeyError:
-            return None
+        return self.kv_store.get(key)
 
     def delete(self, key: str) -> bool:
         if key in self.kv_store:
             del self.kv_store[key]
-            self.persister.save(self.kv_store)
             return True
         return False
 

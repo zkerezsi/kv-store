@@ -50,8 +50,6 @@ async def handleDelete(request: web.Request):
 @routes.get("/")
 async def handleList(request: web.Request):
     result = request.app[kv_store].list()
-    if len(result) == 0:
-        return web.Response(text="empty")
     response = web.StreamResponse(status=200)
     response.headers["Content-Type"] = "text/plain"
     await response.prepare(request)
