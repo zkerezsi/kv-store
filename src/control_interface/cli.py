@@ -1,6 +1,7 @@
 import asyncio
 import sys
 from src.kv_store.kv_store import KVStore
+from urllib.parse import quote, unquote
 
 
 class KVStoreCLI:
@@ -11,19 +12,19 @@ class KVStoreCLI:
         try:
             if cmd.startswith("set"):
                 _, key, value = cmd.split()
-                self.kv_store.set(key, value)
-                print(f'{key}="{value}"')
+                self.kv_store.set(key, unquote(value))
+                print(f"{key}={quote(value)}")
             elif cmd.startswith("update"):
                 _, key, value = cmd.split()
-                if self.kv_store.update(key, value):
-                    print(f"{key}={value}")
+                if self.kv_store.update(key, unquote(value)):
+                    print(f"{key}={quote(value)}")
                 else:
                     print(f"{key} not found")
             elif cmd.startswith("get"):
                 _, key = cmd.split()
                 value = self.kv_store.get(key)
                 if value is not None:
-                    print(f"{key}={value}")
+                    print(f"{key}={quote(value)}")
                 else:
                     print(f"{key} not found")
             elif cmd.startswith("delete"):
@@ -34,7 +35,7 @@ class KVStoreCLI:
                     print(f"{key} not found")
             elif cmd.startswith("list"):
                 for key, value in self.kv_store.list():
-                    print(f"{key}={value}")
+                    print(f"{key}={quote(value)}")
             else:
                 print(
                     "Unknown command. Please use 'set', 'update', 'get', 'delete', 'list'."

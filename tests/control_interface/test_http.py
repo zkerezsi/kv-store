@@ -17,9 +17,9 @@ async def client(aiohttp_client: AiohttpClient):
 
 
 async def test_set_valid(client: TestClient[web.Request, web.Application]):
-    resp = await client.put("/test_key?value=test_value")
+    resp = await client.put("/key1?value=hello%20world")
     assert resp.status == 200
-    assert await resp.text() == "test_key=test_value"
+    assert await resp.text() == "key1=hello%20world"
 
 
 async def test_set_missing_value(client: TestClient[web.Request, web.Application]):
@@ -29,10 +29,9 @@ async def test_set_missing_value(client: TestClient[web.Request, web.Application
 
 
 async def test_update_existing_key(client: TestClient[web.Request, web.Application]):
-    await client.put("/test_key?value=old_value")
-    resp = await client.post("/test_key?value=new_value")
+    resp = await client.post("/key1?value=new_value")
     assert resp.status == 200
-    assert await resp.text() == "test_key=new_value"
+    assert await resp.text() == "key1=new_value"
 
 
 async def test_update_missing_value(client: TestClient[web.Request, web.Application]):
@@ -48,10 +47,9 @@ async def test_update_nonexistent_key(client: TestClient[web.Request, web.Applic
 
 
 async def test_get_existing_key(client: TestClient[web.Request, web.Application]):
-    await client.put("/test_key?value=test_value")
-    resp = await client.get("/test_key")
+    resp = await client.get("/key1")
     assert resp.status == 200
-    assert await resp.text() == "test_value"
+    assert await resp.text() == "value1"
 
 
 async def test_get_nonexistent_key(client: TestClient[web.Request, web.Application]):
@@ -61,10 +59,9 @@ async def test_get_nonexistent_key(client: TestClient[web.Request, web.Applicati
 
 
 async def test_delete_existing_key(client: TestClient[web.Request, web.Application]):
-    await client.put("/test_key?value=test_value")
-    resp = await client.delete("/test_key")
+    resp = await client.delete("/key1")
     assert resp.status == 200
-    assert await resp.text() == "test_key deleted"
+    assert await resp.text() == "key1 deleted"
 
 
 async def test_delete_nonexistent_key(client: TestClient[web.Request, web.Application]):
@@ -82,8 +79,6 @@ async def test_list_empty_store(client: TestClient[web.Request, web.Application]
 
 
 async def test_list_with_items(client: TestClient[web.Request, web.Application]):
-    await client.put("/key1?value=value1")
-    await client.put("/key2?value=value2")
     resp = await client.get("/")
     assert resp.status == 200
     assert await resp.text() == "key1=value1\nkey2=value2\n"

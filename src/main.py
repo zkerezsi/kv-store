@@ -1,4 +1,5 @@
 import logging
+from src.config import STORAGE_PATH
 import src.logger  # type: ignore
 import asyncio
 import contextlib
@@ -7,14 +8,14 @@ from aiohttp import web
 from src.control_interface.cli import KVStoreCLI
 from src.control_interface.http import kv_store
 from src.kv_store.basic_kv_store import BasicKVStore
-from src.persister.json_persister import JSONPersister
 from src.control_interface.http import app
+from src.persister.persister_factory import persister_factory
 
 logger = logging.getLogger("main")
 
 
 async def background_tasks(app: web.Application):
-    persister = JSONPersister("store.json")
+    persister = persister_factory(STORAGE_PATH)
     app[kv_store] = BasicKVStore(persister)
     cli = KVStoreCLI(app[kv_store])
     cli_task = asyncio.create_task(cli.run())

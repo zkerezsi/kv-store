@@ -1,5 +1,5 @@
 from aiohttp import web
-
+from urllib.parse import quote
 from src.kv_store.kv_store import KVStore
 
 routes = web.RouteTableDef()
@@ -12,7 +12,7 @@ async def handleSet(request: web.Request):
     if value is None:
         return web.Response(status=400, text="value not provided in request")
     request.app[kv_store].set(key, value)
-    return web.Response(text=f"{key}={value}")
+    return web.Response(text=f"{key}={quote(value)}")
 
 
 @routes.post("/{key}")
@@ -23,7 +23,7 @@ async def handleUpdate(request: web.Request):
         return web.Response(status=400, text="value not provided in request")
     updated = request.app[kv_store].update(key, value)
     if updated:
-        return web.Response(text=f"{key}={value}")
+        return web.Response(text=f"{key}={quote(value)}")
     else:
         return web.Response(status=404, text=f"{key} not found")
 
@@ -54,7 +54,7 @@ async def handleList(request: web.Request):
     response.headers["Content-Type"] = "text/plain"
     await response.prepare(request)
     for key, value in result:
-        await response.write(f"{key}={value}\n".encode("utf-8"))
+        await response.write(f"{key}={quote(value)}\n".encode("utf-8"))
     await response.write_eof()
     return response
 
