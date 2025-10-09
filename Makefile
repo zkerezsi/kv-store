@@ -5,4 +5,4 @@ test:
 	pytest --asyncio-mode=auto tests
 
 run:
-	python -m src.main
+	CLI_ENABLED=true uv run -m src.main

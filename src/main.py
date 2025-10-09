@@ -1,5 +1,5 @@
 import logging
-from src.config import STORAGE_PATH
+from src.config import STORAGE_PATH, CLI_ENABLED
 import src.logger  # type: ignore
 import asyncio
 import contextlib
@@ -15,18 +15,19 @@ logger = logging.getLogger("main")
 
 
 async def background_tasks(app: web.Application):
-    persister = persister_factory(STORAGE_PATH)
-    app[kv_store] = BasicKVStore(persister)
     cli = KVStoreCLI(app[kv_store])
     cli_task = asyncio.create_task(cli.run())
     yield
     cli_task.cancel()
     with contextlib.suppress(asyncio.CancelledError):
         await cli_task
-        logger.info("Graceful shutdown completed.")
 
 
 if __name__ == "__main__":
     logger.info("Starting the key-value store...")
-    app.cleanup_ctx.append(background_tasks)
+    persister = persister_factory(STORAGE_PATH)
+    app[kv_store] = BasicKVStore(persister)
+    if CLI_ENABLED:
+        app.cleanup_ctx.append(background_tasks)
     web.run_app(app, print=None, port=8080)
+    logger.info("Graceful shutdown completed.")

@@ -1,0 +1,7 @@
+services:
+  kv-store:
+    build: .
+    environment:
+      STORAGE_PATH: /app/store.json
+    ports:
+      - "8080:8080"
